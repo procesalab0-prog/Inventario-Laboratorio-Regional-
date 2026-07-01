@@ -91,13 +91,6 @@ header.app-header { background: #fff; border-bottom: 1px solid #E3E8F0; position
 .header-sep { width: 1px; height: 24px; background: #E3E8F0; }
 .header-title { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
 .header-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.sheets-badge {
-  display: flex; align-items: center; gap: 8px; padding: 6px 11px; background: #F0F5EC;
-  border: 1px solid #DBEBCF; border-radius: 999px; font-size: 12px; font-weight: 500; color: #3F7A1E;
-}
-.sheets-badge.offline { background: #F1F5F9; border-color: #E2E8F0; color: #64748B; }
-.sheets-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #16A34A; }
-.sheets-badge.offline .dot { background: #94A3B8; }
 .btn-logout {
   background: none; border: 1px solid #E3E8F0; border-radius: 8px; padding: 7px 12px;
   font-size: 13px; color: #64748B; cursor: pointer;
@@ -201,7 +194,7 @@ td.center { text-align: center; }
 }
 .toast .dot { width: 8px; height: 8px; border-radius: 50%; background: #34D399; }
 
-/* config warning banner (shown when Supabase / Sheets not yet configured) */
+/* config warning banner (shown when Supabase is not yet configured) */
 .config-banner {
   background: #FFFBEB; border-bottom: 1px solid #FDE68A; color: #92400E; font-size: 13px;
   padding: 10px 20px; text-align: center;

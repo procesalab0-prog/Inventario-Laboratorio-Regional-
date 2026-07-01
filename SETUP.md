@@ -1,8 +1,7 @@
 # Guía de configuración — Inventario de Almacén Regional
 
 Esta app es un sitio estático (HTML/CSS/JS, sin build ni servidor propio) que
-usa **Supabase** como base de datos + autenticación, y opcionalmente sincroniza
-con **Google Sheets** mediante un Google Apps Script.
+usa **Supabase** como base de datos + autenticación.
 
 Sigue los pasos en orden. Todo se hace desde el navegador, sin instalar nada.
 
@@ -57,8 +56,7 @@ Abre [`js/config.js`](./js/config.js) en este repo y completa:
 ```js
 window.APP_CONFIG = {
   SUPABASE_URL: "https://xxxxxxxxxxxx.supabase.co",
-  SUPABASE_ANON_KEY: "eyJhbGciOi...",
-  GOOGLE_SHEETS_WEBHOOK_URL: "" // lo llenamos en la Parte 2
+  SUPABASE_ANON_KEY: "eyJhbGciOi..."
 };
 ```
 
@@ -66,59 +64,7 @@ Guarda el archivo. Con esto, el login y el guardado de inventario ya funcionan.
 
 ---
 
-## Parte 2 — Google Sheets (sincronización opcional)
-
-La forma más simple de mantener una hoja de Google Sheets actualizada sin
-manejar credenciales de Google Cloud es usar **Google Apps Script** como
-"puente": la app le hace un `POST` cada vez que hay un cambio, y el script
-escribe en la hoja.
-
-### 2.1 Crear la hoja de cálculo
-
-1. Ve a [sheets.google.com](https://sheets.google.com) → **Hoja de cálculo en blanco**.
-2. Nómbrala, por ejemplo, `Inventario Almacén Regional`.
-3. No hace falta crear las pestañas a mano — el script las crea solo la primera vez.
-
-### 2.2 Añadir el script
-
-1. En la hoja: **Extensiones → Apps Script**.
-2. Borra el contenido de `Code.gs` que aparece por defecto.
-3. Copia y pega el contenido de [`apps-script/Code.gs`](./apps-script/Code.gs) de este repo.
-4. Guarda (ícono de disco o `Ctrl/Cmd + S`). Ponle nombre al proyecto, ej. `inventario-sync`.
-
-### 2.3 Publicar como aplicación web
-
-1. Arriba a la derecha: **Implementar → Nueva implementación**.
-2. Tipo: selecciona **Aplicación web**.
-3. Configuración:
-   - **Ejecutar como**: Yo (tu cuenta)
-   - **Quién tiene acceso**: Cualquier usuario
-4. **Implementar**. La primera vez te pedirá autorizar permisos:
-   - Click **Autorizar acceso** → elige tu cuenta → si aparece "Google no verificó esta app", click **Configuración avanzada** → **Ir a inventario-sync (no seguro)** → **Permitir**.
-   (Esto es normal para scripts personales no publicados en el Marketplace; el script solo corre en tu propia hoja.)
-5. Copia la **URL de la aplicación web** (termina en `/exec`).
-
-### 2.4 Conectar la app
-
-Abre `js/config.js` otra vez y completa la última línea:
-
-```js
-GOOGLE_SHEETS_WEBHOOK_URL: "https://script.google.com/macros/s/AKfycb.../exec"
-```
-
-Guarda. En el header de la app, la insignia debería pasar de "Google Sheets · no configurado" a "Google Sheets · sincronizado".
-
-### 2.5 Probar
-
-1. Recarga la app, inicia sesión y registra una entrada de prueba.
-2. Abre la hoja de Google Sheets — debería aparecer una fila nueva en la pestaña **Inventario** en unos segundos.
-3. Registra una salida — la fila desaparece de **Inventario** y aparece en **Salidas**.
-
-> Si algo no sincroniza: revisa en el navegador la consola (F12 → Console) por avisos de "No se pudo sincronizar con Google Sheets". Supabase sigue siendo la fuente de verdad aunque falle Sheets, así que nunca se pierden datos — solo se retrasa el reflejo en la hoja.
-
----
-
-## Parte 3 — Publicar el sitio
+## Parte 2 — Publicar el sitio
 
 Como es HTML/CSS/JS estático, puedes desplegarlo en cualquier hosting estático:
 
@@ -135,5 +81,4 @@ No necesitas variables de entorno de servidor: toda la configuración vive en `j
 | Qué | Dónde | Archivo relacionado |
 |---|---|---|
 | Base de datos + Auth | Supabase | `supabase/schema.sql`, `js/config.js` |
-| Sync a Sheets | Google Apps Script | `apps-script/Code.gs`, `js/config.js` |
 | Frontend | Cualquier hosting estático | `index.html`, `css/`, `js/` |

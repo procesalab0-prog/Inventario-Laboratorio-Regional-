@@ -1,7 +1,6 @@
 // Inventario de Almacén Regional — lógica de la aplicación.
 // Sustituye el estado en memoria del prototipo de diseño por datos reales
-// persistidos en Supabase (tablas `inventario` y `salidas`), y añade
-// sincronización best-effort hacia Google Sheets tras cada cambio.
+// persistidos en Supabase (tablas `inventario` y `salidas`).
 
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const VALIDATIONS = [
@@ -57,18 +56,6 @@ function checkConfig() {
   }
   banner.classList.add('hidden');
   return true;
-}
-
-function updateSheetsBadge() {
-  const badge = document.getElementById('sheets-badge');
-  const text = document.getElementById('sheets-badge-text');
-  if (window.SHEETS_CONFIGURED) {
-    badge.classList.remove('offline');
-    text.textContent = 'Google Sheets · sincronizado';
-  } else {
-    badge.classList.add('offline');
-    text.textContent = 'Google Sheets · no configurado';
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -265,7 +252,6 @@ function renderAll() {
   renderInventario();
   renderSalidaView();
   renderBuscarView();
-  updateSheetsBadge();
 }
 
 // ---------------------------------------------------------------------------
@@ -326,8 +312,7 @@ async function registerEntry(evt) {
   clearEntryForm();
   setTab('inventario');
   renderAll();
-  flash('Entrada ' + e.id + ' registrada · sincronizando con Google Sheets');
-  sheetsUpsertRow(data);
+  flash('Entrada ' + e.id + ' registrada');
 }
 
 function clearEntryForm() {
@@ -365,8 +350,6 @@ async function registerSalida() {
   document.getElementById('sal-nota').value = '';
   renderAll();
   flash('Salida de ' + id + ' registrada · inventario actualizado');
-  sheetsDeleteRow(id);
-  sheetsLogSalida(salRow);
 }
 
 // ---------------------------------------------------------------------------
@@ -415,8 +398,7 @@ function wireEvents() {
 (async function boot() {
   populateValidationSelects();
   wireEvents();
-  if (!checkConfig()) { updateSheetsBadge(); return; }
-  updateSheetsBadge();
+  if (!checkConfig()) return;
 
   const { data: { session } } = await window.supabaseClient.auth.getSession();
   if (session) { await enterApp(); }
