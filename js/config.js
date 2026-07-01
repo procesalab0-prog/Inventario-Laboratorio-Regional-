@@ -17,5 +17,5 @@ window.APP_CONFIG = {
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqYXRqZ2ViYnFxemp0aWV2bXNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5MjIxNTEsImV4cCI6MjA5ODQ5ODE1MX0.FA5J2jegLAKI8Ujrz6OYJhm8rSrHzOikMvF_w2vMwQY",
 
   // URL de implementación del Google Apps Script (ver /apps-script/Code.gs)
-  GOOGLE_SHEETS_WEBHOOK_URL: "" // Ej: "https://script.google.com/macros/s/AKfycb.../exec"
+  GOOGLE_SHEETS_WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbx0i74yQd7borPk0Toiuv-kC1iwWR2pyXXblWs1oiSa7M7nCNye4iDrm_bLaPDwYepr/exec"
 };
