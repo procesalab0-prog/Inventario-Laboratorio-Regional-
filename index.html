@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventario de Almacén Regional · OPmobility</title>
+<link rel="icon" href="assets/opmobility-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="config-banner" class="config-banner hidden"></div>
+
+<!-- ===== LOGIN ===== -->
+<section id="login-screen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo-row"><img src="assets/opmobility-mark.png" alt="OPmobility"></div>
+    <div class="login-divider"></div>
+    <div class="login-title">Inventario de Almacén Regional</div>
+    <div class="login-subtitle">Inicia sesión para acceder al sistema</div>
+    <form id="login-form" class="login-fields">
+      <div>
+        <label class="field-label">Correo corporativo</label>
+        <input id="login-email" type="email" class="text-input" placeholder="nombre@opmobility.com" autocomplete="username" required>
+      </div>
+      <div>
+        <label class="field-label">Contraseña</label>
+        <input id="login-pass" type="password" class="text-input" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button id="login-btn" type="submit" class="btn-primary">Iniciar sesión</button>
+    </form>
+    <div id="login-error" class="login-error hidden"></div>
+    <div class="login-secure-row"><span class="dot-green"></span>Acceso seguro · autenticación Supabase</div>
+  </div>
+</section>
+
+<!-- ===== APP ===== -->
+<div id="app-shell" class="app-shell hidden">
+
+  <header class="app-header">
+    <div class="header-top">
+      <div class="header-brand">
+        <img src="assets/opmobility-mark.png" alt="OPmobility">
+        <div class="header-sep"></div>
+        <div class="header-title">Inventario de Almacén Regional</div>
+      </div>
+      <div class="header-actions">
+        <span id="sheets-badge" class="sheets-badge offline"><span class="dot"></span><span id="sheets-badge-text">Google Sheets · no configurado</span></span>
+        <button id="logout-btn" class="btn-logout">Salir</button>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stats-bar-inner">
+        <div class="stat-item">Total <b id="stat-total">0</b></div>
+        <div class="stat-item">Tanques <b id="stat-tanques">0</b></div>
+        <div class="stat-item">Por disponerse <b class="warn" id="stat-por-disponerse">0</b></div>
+        <div class="stat-item">Sin contacto <b class="danger" id="stat-sin-contacto">0</b></div>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <div class="tab-item active" data-tab="inventario">Inventario</div>
+      <div class="tab-item" data-tab="entrada">Registro de Entrada</div>
+      <div class="tab-item" data-tab="salida">Registro de Salida</div>
+      <div class="tab-item" data-tab="buscar">Buscar</div>
+    </nav>
+  </header>
+
+  <main class="app-main">
+
+    <!-- INVENTARIO -->
+    <section id="view-inventario" class="view">
+      <div class="view-head">
+        <div>
+          <div class="eyebrow">Inventario completo</div>
+          <div class="view-title">Todos los registros</div>
+        </div>
+        <span class="pill-count"><span id="inv-count">0</span> items en almacén</span>
+      </div>
+      <div class="card">
+        <div class="scrollx">
+          <table>
+            <thead><tr>
+              <th>ID</th><th>Material</th><th>Fecha entrada</th><th>Proyecto</th><th>PAE</th>
+              <th>Validación 1</th><th>Validación 2</th><th>Validación 3</th><th>Condición</th>
+              <th class="center">Cant.</th><th class="center">Rack</th><th class="center"></th>
+            </tr></thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENTRADA -->
+    <section id="view-entrada" class="view hidden">
+      <div class="eyebrow">Registro de entrada</div>
+      <div class="view-title" style="margin:2px 0 18px">Nueva entrada al almacén</div>
+      <form id="entry-form" class="form-card">
+        <div class="form-grid">
+          <div><label class="field-label">ID</label><input id="e-id" class="text-input" placeholder="Ej: 61913" required></div>
+          <div><label class="field-label">Material</label>
+            <select id="e-material" class="text-input" required>
+              <option value="">— Seleccionar —</option>
+              <option value="FIXTURE BUCK">FIXTURE BUCK</option>
+              <option value="TANQUE">TANQUE</option>
+              <option value="BOMBA">BOMBA</option>
+            </select>
+          </div>
+          <div><label class="field-label">Fecha de entrada</label><input id="e-fecha" type="date" class="text-input"></div>
+          <div><label class="field-label">Proyecto</label><input id="e-proyecto" class="text-input" placeholder="Ej: NIS P13C SOR FWD ORVR"></div>
+          <div><label class="field-label">PAE</label><input id="e-pae" class="text-input" placeholder="Responsable"></div>
+          <div><label class="field-label">Condición</label>
+            <select id="e-cond" class="text-input">
+              <option value="">— Seleccionar —</option>
+              <option value="POR DISPONERSE">POR DISPONERSE</option>
+              <option value="DISPONIBLE">DISPONIBLE</option>
+              <option value="SIN CONTACTO">SIN CONTACTO</option>
+              <option value="SCRAP">SCRAP</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+          <div><label class="field-label">Validación realizada 1</label><select id="e-v1" class="text-input"></select></div>
+          <div><label class="field-label">Validación realizada 2</label><select id="e-v2" class="text-input"></select></div>
+          <div><label class="field-label">Validación realizada 3</label><select id="e-v3" class="text-input"></select></div>
+          <div><label class="field-label">Cantidad</label><input id="e-cant" type="number" min="1" value="1" class="text-input"></div>
+          <div><label class="field-label">Rack</label>
+            <select id="e-rack" class="text-input">
+              <option value="">— Seleccionar —</option>
+              <option>N/A</option><option>1</option><option>2</option><option>3</option><option>4</option>
+              <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button id="entry-submit" type="submit" class="btn-primary" style="width:auto;padding:12px 22px">＋ Registrar entrada</button>
+          <button id="entry-clear" type="button" class="btn-secondary">Limpiar</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- SALIDA -->
+    <section id="view-salida" class="view hidden">
+      <div class="eyebrow">Registro de salida</div>
+      <div class="view-title" style="margin:2px 0 18px">Dar salida a un material</div>
+      <div class="salida-grid">
+        <div class="form-card">
+          <div>
+            <label class="field-label">Buscar material (por ID o nombre)</label>
+            <div class="search-wrap">
+              <span class="search-icon">⌕</span>
+              <input id="sal-query" class="text-input search-input" placeholder="Ej: 61913 o TANQUE…">
+            </div>
+            <div id="sal-matches" class="match-list"></div>
+          </div>
+          <div id="sal-item-summary" class="sal-item-summary hidden"></div>
+          <div class="field-block">
+            <label class="field-label">Motivo de salida</label>
+            <select id="sal-motivo" class="text-input">
+              <option value="">— Seleccionar —</option>
+              <option>Envío a producción</option><option>Despacho a cliente</option><option>Validación / pruebas</option>
+              <option>Traslado de rack</option><option>Baja / SCRAP</option><option>Devolución a proveedor</option>
+              <option>Disponer a residuos peligrosos</option><option>Salida de material</option>
+            </select>
+          </div>
+          <div class="field-block">
+            <label class="field-label">Nota (opcional)</label>
+            <input id="sal-nota" class="text-input" placeholder="Detalle de la salida…">
+          </div>
+          <button id="sal-submit" class="btn-danger" style="margin-top:20px">Registrar salida</button>
+        </div>
+        <div class="card">
+          <div class="card-subhead">Historial de salidas</div>
+          <div id="sal-history-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUSCAR -->
+    <section id="view-buscar" class="view hidden">
+      <div class="eyebrow">Buscar en inventario</div>
+      <div class="view-title" style="margin:2px 0 18px">Filtrar registros</div>
+      <div class="form-card" style="max-width:none;margin-bottom:20px;padding:22px">
+        <div class="form-grid search-grid">
+          <div><label class="field-label">ID</label><input id="s-id" class="text-input" placeholder="Buscar por ID…"></div>
+          <div><label class="field-label">Material</label>
+            <select id="s-material" class="text-input">
+              <option value="">Todos</option>
+              <option value="FIXTURE BUCK">FIXTURE BUCK</option>
+              <option value="TANQUE">TANQUE</option>
+              <option value="BOMBA">BOMBA</option>
+            </select>
+          </div>
+          <div><label class="field-label">Proyecto</label><input id="s-proyecto" class="text-input" placeholder="Filtrar proyecto…"></div>
+          <div><label class="field-label">PAE</label><input id="s-pae" class="text-input" placeholder="Filtrar responsable…"></div>
+          <div><label class="field-label">Condición</label>
+            <select id="s-cond" class="text-input">
+              <option value="">Todas</option>
+              <option value="POR DISPONERSE">POR DISPONERSE</option>
+              <option value="DISPONIBLE">DISPONIBLE</option>
+              <option value="SIN CONTACTO">SIN CONTACTO</option>
+              <option value="SCRAP">SCRAP</option>
+              <option value="N/A">N/A</option>
+            </select>
+          </div>
+          <div><label class="field-label">Rack</label>
+            <select id="s-rack" class="text-input">
+              <option value="">Todos</option>
+              <option>N/A</option><option>1</option><option>2</option><option>3</option><option>4</option>
+              <option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:18px"><button id="search-clear" class="btn-secondary small">✕ Limpiar filtros</button></div>
+      </div>
+      <div class="card">
+        <div class="results-head">
+          <span class="label">Resultados</span>
+          <span class="results-count"><span id="search-count">0</span> encontrados</span>
+        </div>
+        <div id="search-results-wrap"></div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<div id="toast" class="toast hidden" style="position:fixed"><span class="dot"></span><span id="toast-text"></span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/sheets.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
