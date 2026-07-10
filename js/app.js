@@ -2,11 +2,16 @@
 // Sustituye el estado en memoria del prototipo de diseño por datos reales
 // persistidos en Supabase (tablas `inventario` y `salidas`).
 
+const APP_VERSION = '1.1.0';
+
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const VALIDATIONS = [
-  'FUEL GAUGE CHARACTERISTICS', 'STATIC VENTING', 'COLD ROLL OVER', 'PRESSURE VACUUM',
-  'SOAKING', 'DROP IMPACT', 'GPMM', 'PRESSURE DURABILITY', 'FUEL PERMEATION',
-  'WELD STRENGTH', 'TOTAL VOLUME', 'FUEL SOAK'
+  'SOAKING', 'FUEL METER FLUCTUATION', 'FUEL GAUGE CHARACTERISTICS', 'STATIC VENTING',
+  'PRESSURE VACUUM', 'DIMENSIONS', 'TOTAL VOLUME', 'APPEARANCE', 'TORQUE TEST',
+  'DROP IMPACT', 'FUEL SOAK', 'WELD STRENGTH', 'THERMAL CYCLING', 'COLD ROLL OVER',
+  'BURST TEST', 'GPMM', 'INTERNAL CLEANLEANESS', 'PENDULUM IMPACT', 'SEAL COMPRESSON',
+  'SLED IMPACT', 'T-PEEL', 'LEAK TEST', 'WEIGHT LOST', 'PRESSURE DURABILITY',
+  'FUEL PERMEATION', 'PRESSURE RESISTANCE', 'STATIC FUEL LEAKAGE'
 ];
 const COND_STYLE = {
   'POR DISPONERSE': { bg: '#FEF3C7', color: '#B45309' },
@@ -68,6 +73,21 @@ function flash(msg) {
   toast.classList.remove('hidden');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.add('hidden'), 3400);
+}
+
+// ---------------------------------------------------------------------------
+// Easter egg — 6 toques en el logo muestra la versión y autoría
+// ---------------------------------------------------------------------------
+let logoTapCount = 0;
+let logoTapTimer = null;
+function handleLogoTap() {
+  logoTapCount++;
+  clearTimeout(logoTapTimer);
+  logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 1500);
+  if (logoTapCount >= 6) {
+    logoTapCount = 0;
+    flash('Hecho por Procesa Lab · v' + APP_VERSION);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -356,6 +376,8 @@ async function registerSalida() {
 // Wiring
 // ---------------------------------------------------------------------------
 function wireEvents() {
+  document.getElementById('header-logo').addEventListener('click', handleLogoTap);
+
   document.getElementById('login-form').addEventListener('submit', evt => {
     evt.preventDefault();
     doLogin(document.getElementById('login-email').value, document.getElementById('login-pass').value);
